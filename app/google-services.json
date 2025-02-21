@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "206778835221",
+    "project_id": "rebonnte-df5cf",
+    "storage_bucket": "rebonnte-df5cf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206778835221:android:b3bd7a510d9597ee33091c",
+        "android_client_info": {
+          "package_name": "com.openclassrooms.rebonnte"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "206778835221-1p6m5mqi5isg9epggo1h9551qjtk36rg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkl5aw4svrCA_SPePzmFTo9EYbTg75y7I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "206778835221-1p6m5mqi5isg9epggo1h9551qjtk36rg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

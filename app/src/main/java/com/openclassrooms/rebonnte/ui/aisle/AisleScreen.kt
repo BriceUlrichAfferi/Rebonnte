@@ -21,19 +21,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.openclassrooms.rebonnte.startDetailActivity
 
 @Composable
 fun AisleScreen(viewModel: AisleViewModel) {
     val aisles by viewModel.aisles.collectAsState(initial = emptyList())
     val context = LocalContext.current
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(aisles) { aisle ->
-            AisleItem(aisle = aisle, onClick = {
+            AisleItem(aisle = aisle) {
                 startDetailActivity(context, aisle.name)
-            })
+            }
         }
     }
 }
@@ -50,11 +49,4 @@ fun AisleItem(aisle: Aisle, onClick: () -> Unit) {
         Text(text = aisle.name, style = MaterialTheme.typography.bodyMedium)
         Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Arrow")
     }
-}
-
-private fun startDetailActivity(context: Context, name: String) {
-    val intent = Intent(context, AisleDetailActivity::class.java).apply {
-        putExtra("nameAisle", name)
-    }
-    context.startActivity(intent)
 }

@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">rebonnte</string>
+    <string name="web_client_id">206778835221-1p6m5mqi5isg9epggo1h9551qjtk36rg.apps.googleusercontent.com</string>
+    <string name="user_profile">User profile</string>
+    <string name="event_list">Event list</string>
+    <string name="contentDescription_notification_icon">Notification icon</string>
+    <string name="notifications_enabled">Nofifications enabled</string>
+    <string name="notifications_disabled">Nofifications disabled</string>
+    <string name="notifications">Nofifications</string>
+    <string name="create_event_label">Creation of an event</string>
+    <string name="contentDescription_go_back">Go back</string>
+    <string name="action_valider">Validate</string>
+    <string name="description_button_add">Add</string>
+    <string name="no_description">Description not available</string>
+    <string name="no_profilePic">No profile image</string>
+    <string name="error_occured">An error occurred,\nplease try again later</string>
+    <string name="error">Error </string>
+    <string name="bottom_navigation_events">Events</string>
+    <string name="bottom_navigation_profile">Profile</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_up2">Sign up</string>
+    <string name="sign_up3">Sign up</string>
+    <string name="sign_in_email">Sign in with Email</string>
+    <string name="sign_in">Sign in</string>
+    <string name="enter_email">Enter your email</string>
+    <string name="email">Email</string>
+    <string name="next">Next</string>
+    <string name="enter_name_surname">Enter your name and surname</string>
+    <string name="enter_password">Enter your password</string>
+    <string name="password">Password</string>
+    <string name="name">First Name</string>
+    <string name="surname">Surname</string>
+    <string name="save">Save</string>
+    <string name="password_recovery">Recover password</string>
+    <string name="password_recovery_label">Receive instructions to this email that explain how to reset your password.</string>
+    <string name="password_recovery_message">Check your email. \nFollow the instructions sent to %1$s to recover your password.</string>
 </resources>

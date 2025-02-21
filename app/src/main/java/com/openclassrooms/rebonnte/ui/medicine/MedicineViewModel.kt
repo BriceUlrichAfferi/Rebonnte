@@ -1,60 +1,56 @@
 package com.openclassrooms.rebonnte.ui.medicine
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.openclassrooms.rebonnte.ui.aisle.Aisle
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.util.Locale
+import kotlinx.coroutines.launch
 import java.util.Random
 
-class MedicineViewModel : ViewModel() {
-    var _medicines = MutableStateFlow<MutableList<Medicine>>(mutableListOf())
-    val medicines: StateFlow<List<Medicine>> get() = _medicines
-
-    init {
-        _medicines.value = ArrayList() // Initialiser avec une liste vide
-    }
+class MedicineViewModel(private val repository: MedicineRepository) : ViewModel() {
+    val medicines: StateFlow<List<Medicine>> = repository.medicines
 
     fun addRandomMedicine(aisles: List<Aisle>) {
-        val currentMedicines = ArrayList(medicines.value)
-        currentMedicines.add(
-            Medicine(
-                "Medicine " + (currentMedicines.size + 1),
-                Random().nextInt(100),
-                aisles[Random().nextInt(aisles.size)].name,
-                emptyList()
-            )
+        if (aisles.isEmpty()) return
+        val addingUserEmail = FirebaseAuth.getInstance().currentUser?.email ?: "anonymous"
+        val newMedicine = Medicine(
+            name = "Medicine ${Random().nextInt(1000)}", // Use random to avoid duplicates
+            stock = Random().nextInt(100),
+            nameAisle = aisles[Random().nextInt(aisles.size)].name,
+            histories = emptyList(),
+            addedByEmail = addingUserEmail
         )
-        _medicines.value = currentMedicines
+        repository.addMedicine(newMedicine)
+    }
+
+    fun addMedicine(medicine: Medicine) {
+        val addingUserEmail = FirebaseAuth.getInstance().currentUser?.email ?: "anonymous"
+        val updatedMedicine = medicine.copy(addedByEmail = addingUserEmail)
+        repository.addMedicine(updatedMedicine)
+    }
+
+    fun updateMedicine(medicine: Medicine) {
+        repository.updateMedicine(medicine)
+    }
+
+    fun deleteMedicine(medicineId: String) {
+        repository.deleteMedicine(medicineId)
     }
 
     fun filterByName(name: String) {
-        val currentMedicines: List<Medicine> = medicines.value
-        val filteredMedicines: MutableList<Medicine> = ArrayList()
-        for (medicine in currentMedicines) {
-            if (medicine.name.lowercase(Locale.getDefault())
-                    .contains(name.lowercase(Locale.getDefault()))
-            ) {
-                filteredMedicines.add(medicine)
-            }
-        }
-        _medicines.value = filteredMedicines
-    }
-
-    fun sortByNone() {
-        _medicines.value = medicines.value.toMutableList() // Pas de tri
+        repository.filterByName(name)
     }
 
     fun sortByName() {
-        val currentMedicines = ArrayList(medicines.value)
-        currentMedicines.sortWith(Comparator.comparing(Medicine::name))
-        _medicines.value = currentMedicines
+        repository.sortByName()
     }
 
     fun sortByStock() {
-        val currentMedicines = ArrayList(medicines.value)
-        currentMedicines.sortWith(Comparator.comparingInt(Medicine::stock))
-        _medicines.value = currentMedicines
+        repository.sortByStock()
+    }
+
+    fun sortByNone() {
+        repository.sortByNone()
     }
 }
-
