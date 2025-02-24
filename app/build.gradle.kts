@@ -53,7 +53,7 @@ android {
 
 sonarqube {
     properties {
-        property("sonar.projectKey", "com.openclassrooms.rebonnte")
+        property("sonar.projectKey", "BriceUlrichAfferi_Rebonnte")
         property("sonar.organization", "briceulrichafferi")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.gradle.skipCompile", "true") // Add this line
