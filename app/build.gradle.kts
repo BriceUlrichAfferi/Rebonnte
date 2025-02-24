@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
+    id("org.sonarqube") version "4.4.1.3373"
 }
 
 android {
@@ -47,6 +48,15 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "com.openclassrooms.rebonnte")
+        property("sonar.organization", "briceulrichafferi")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.gradle.skipCompile", "true") // Add this line
     }
 }
 
@@ -113,7 +123,6 @@ dependencies {
     testImplementation("com.google.firebase:firebase-auth:21.0.7")
     testImplementation("io.mockk:mockk:1.12.0")
     testImplementation("com.jakewharton.threetenabp:threetenabp:1.4.8")
-    testImplementation ("io.mockk:mockk:1.13.16")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
