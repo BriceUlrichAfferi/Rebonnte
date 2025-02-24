@@ -1,8 +1,6 @@
 name: Android CI with SonarCloud
 
 on:
-  push:
-    branches: [ main ]  # Replace with your default branch
   pull_request:
     branches: [ main ]  # Replace with your default branch
 
