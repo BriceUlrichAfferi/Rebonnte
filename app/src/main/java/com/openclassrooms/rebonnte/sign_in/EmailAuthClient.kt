@@ -1,12 +1,13 @@
 package com.openclassrooms.rebonnte.sign_in
 
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.tasks.await
 
 class EmailAuthClient {
-    private val auth = Firebase.auth
+    private val auth = FirebaseAuth.getInstance()
 
     suspend fun signIn(email: String, password: String): SignInResult {
         return try {
@@ -45,7 +46,8 @@ class EmailAuthClient {
                         userName = email, // Initially set username to email
                         email = email,
                         profilePictureUrl = null, // No profile picture at creation
-                        photoUrl = photoUrl?.toString())
+                        photoUrl = photoUrl?.toString()
+                    )
                 },
                 errorMessage = null
             )
@@ -62,7 +64,7 @@ class EmailAuthClient {
         }
     }
 
-    fun signOut() {
+    fun clearSession() { // Renamed from signOut() for consistency with previous suggestion
         auth.signOut()
     }
 

@@ -17,7 +17,7 @@ class AisleRepository(private val firestore: FirebaseFirestore) {
 
     private fun loadAisles() {
         firestore.collection(AISLES_COLLECTION)
-            .orderBy("timestamp", Query.Direction.ASCENDING)  // Order by timestamp (latest first)
+            .orderBy("timestamp", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) return@addSnapshotListener
                 val aisleList = snapshot?.documents?.mapNotNull { it.toObject(Aisle::class.java) } ?: emptyList()
@@ -30,5 +30,9 @@ class AisleRepository(private val firestore: FirebaseFirestore) {
 
     fun addAisle(aisle: Aisle) {
         firestore.collection(AISLES_COLLECTION).document(aisle.id).set(aisle)
+    }
+
+    fun deleteAisle(aisle: Aisle) {
+        firestore.collection(AISLES_COLLECTION).document(aisle.id).delete()
     }
 }

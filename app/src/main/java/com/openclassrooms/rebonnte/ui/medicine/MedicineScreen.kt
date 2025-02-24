@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.openclassrooms.rebonnte.ui.aisle.AisleViewModel
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.ui.graphics.Color

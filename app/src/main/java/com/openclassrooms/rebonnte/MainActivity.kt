@@ -36,9 +36,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
+import com.openclassrooms.rebonnte.bottom_navigation.BottomNavBar
 import com.openclassrooms.rebonnte.route.appNavigation
 import com.openclassrooms.rebonnte.sign_in.EmailAuthClient
 import com.openclassrooms.rebonnte.sign_in.GoogleAuthUiClient
+import com.openclassrooms.rebonnte.ui.aisle.AisleDetailActivity
 import com.openclassrooms.rebonnte.ui.aisle.AisleScreen
 import com.openclassrooms.rebonnte.ui.aisle.AisleViewModel
 import com.openclassrooms.rebonnte.ui.medicine.AddMedicineActivity
@@ -80,21 +82,21 @@ fun MyApp(
     val medicineViewModel: MedicineViewModel = koinViewModel()
     val aisleViewModel: AisleViewModel = koinViewModel()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val route = navBackStackEntry?.destination?.route
+    val currentRoute = navBackStackEntry?.destination?.route
 
     RebonnteTheme {
         Scaffold(
             topBar = {
-                if (route in listOf("aisle", "medicine")) { // Show top bar only for app screens
+                if (currentRoute in listOf("aisle", "medicine")) {
                     var isSearchActive by rememberSaveable { mutableStateOf(false) }
                     var searchQuery by remember { mutableStateOf("") }
 
                     Column(verticalArrangement = Arrangement.spacedBy((-1).dp)) {
                         TopAppBar(
-                            title = { if (route == "aisle") Text("Aisle") else Text("Medicines") },
+                            title = { if (currentRoute == "aisle") Text("Aisle") else Text("Medicines") },
                             actions = {
                                 var expanded by remember { mutableStateOf(false) }
-                                if (route == "medicine") {
+                                if (currentRoute == "medicine") {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.padding(end = 8.dp)
@@ -137,7 +139,7 @@ fun MyApp(
                                 }
                             }
                         )
-                        if (route == "medicine") {
+                        if (currentRoute == "medicine") {
                             EmbeddedSearchBar(
                                 query = searchQuery,
                                 onQueryChange = { newQuery ->
@@ -152,31 +154,26 @@ fun MyApp(
                 }
             },
             bottomBar = {
-                if (route in listOf("aisle", "medicine")) { // Show bottom bar only for app screens
-                    NavigationBar {
-                        NavigationBarItem(
-                            icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                            label = { Text("Aisle") },
-                            selected = route == "aisle",
-                            onClick = { navController.navigate("aisle") }
-                        )
-                        NavigationBarItem(
-                            icon = { Icon(Icons.Default.List, contentDescription = null) },
-                            label = { Text("Medicine") },
-                            selected = route == "medicine",
-                            onClick = { navController.navigate("medicine") }
-                        )
-                    }
+                if (currentRoute in listOf("aisle", "medicine")) {
+                    BottomNavBar(
+                        navController = navController,
+                        currentRoute = currentRoute,
+                        googleAuthUiClient = googleAuthUiClient,
+                        emailAuthClient = emailAuthClient,
+                        onSignOut = {
+                            // Optional: Add any additional cleanup here if needed
+                        }
+                    )
                 }
             },
             floatingActionButton = {
-                val context = LocalContext.current // Define context here
-                if (route in listOf("aisle", "medicine")) {
+                val context = LocalContext.current
+                if (currentRoute in listOf("aisle", "medicine")) {
                     FloatingActionButton(onClick = {
-                        if (route == "medicine") {
+                        if (currentRoute == "medicine") {
                             val intent = Intent(context, AddMedicineActivity::class.java)
                             context.startActivity(intent)
-                        } else if (route == "aisle") {
+                        } else if (currentRoute == "aisle") {
                             aisleViewModel.addRandomAisle()
                         }
                     }) {
@@ -197,6 +194,7 @@ fun MyApp(
         }
     }
 }
+
 
 @Composable
 fun currentRoute(navController: NavController): String? {
@@ -275,6 +273,9 @@ fun EmbeddedSearchBar(
     }
 }
 
-fun startDetailActivity(context: Context, name: String) {
-    // Placeholder for detail activity navigation; implement as needed
+fun startDetailActivity(context: Context, aisleName: String) {
+    val intent = Intent(context, AisleDetailActivity::class.java).apply {
+        putExtra("nameAisle", aisleName)
+    }
+    context.startActivity(intent)
 }

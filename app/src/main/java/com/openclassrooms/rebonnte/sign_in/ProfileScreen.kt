@@ -1,6 +1,6 @@
 package com.openclassrooms.rebonnte.sign_in
 
-import android.os.Build
+/*import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -239,4 +239,4 @@ private fun NotificationParameter(
             color = Color.White
         )
     }
-}
+}*/

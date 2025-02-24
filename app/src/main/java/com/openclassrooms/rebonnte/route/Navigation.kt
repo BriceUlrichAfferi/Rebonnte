@@ -21,7 +21,6 @@ import com.openclassrooms.rebonnte.email_sign_up.SignUpScreen
 import com.openclassrooms.rebonnte.sign_in.EmailAuthClient
 import com.openclassrooms.rebonnte.sign_in.EmailSignInScreen
 import com.openclassrooms.rebonnte.sign_in.GoogleAuthUiClient
-import com.openclassrooms.rebonnte.sign_in.ProfileScreen
 import com.openclassrooms.rebonnte.sign_in.SignInScreen
 import com.openclassrooms.rebonnte.sign_in.SignInViewModel
 import com.openclassrooms.rebonnte.sign_in.Userdata
@@ -90,27 +89,6 @@ fun NavGraphBuilder.appNavigation(
         )
     }
 
-    composable("profile") {
-        val context = LocalContext.current
-
-        ProfileScreen(
-            userdata = googleAuthUiClient.getSignedInUser() ?: emailAuthClient.getSignedInUser(),
-            onSignOut = {
-                lifecycleScope.launch {
-                    googleAuthUiClient.signOut()
-                    emailAuthClient.signOut()
-                    Toast.makeText(
-                        context,
-                        "Signed out",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    navController.navigate("sign_in") {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
-        )
-    }
 
     composable("aisle") {
 

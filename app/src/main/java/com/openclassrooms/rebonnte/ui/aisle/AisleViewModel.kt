@@ -11,4 +11,8 @@ class AisleViewModel(private val repository: AisleRepository) : ViewModel() {
         val newAisle = Aisle("Aisle ${currentAisles.size + 1}")
         repository.addAisle(newAisle)
     }
+
+    fun deleteAisle(aisle: Aisle) {
+        repository.deleteAisle(aisle)
+    }
 }

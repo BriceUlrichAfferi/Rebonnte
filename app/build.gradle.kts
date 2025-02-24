@@ -113,7 +113,7 @@ dependencies {
     testImplementation("com.google.firebase:firebase-auth:21.0.7")
     testImplementation("io.mockk:mockk:1.12.0")
     testImplementation("com.jakewharton.threetenabp:threetenabp:1.4.8")
-
+    testImplementation ("io.mockk:mockk:1.13.16")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
