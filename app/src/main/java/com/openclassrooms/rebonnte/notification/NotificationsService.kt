@@ -1,6 +1,6 @@
 package com.openclassrooms.rebonnte.notification
 
-import android.app.NotificationChannel
+/*import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
@@ -56,3 +56,4 @@ class NotificationsService : FirebaseMessagingService() {
         notificationManager.notify(1, notification)
     }
 }
+*/
