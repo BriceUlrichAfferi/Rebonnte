@@ -20,27 +20,28 @@ jobs:
       - name: Ensure gradlew is executable
         run: chmod +x ./gradlew
 
+      - name: Write Keystore File
+        run: echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > app/new_keystore.jks
+
       - name: Build APK
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --stacktrace  # Changed to assembleRelease for APK
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Verify APK Path
-        run: ls -la app/build/outputs/apk/release
-
-      # Debugging Firebase credentials to check if the secret is set correctly
-      - name: Debugging Firebase credentials
-        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" > eventoriassignin-firebase-adminsdk-fbsvc-685e429f94.json
+      - name: Write Firebase Service Credentials
+        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" > firebase_credentials.json
         shell: bash
 
-      # Check if the Firebase credentials file was written correctly
       - name: Check Firebase credentials file
-        run: cat rebonnte-df5cf-firebase-adminsdk-fbsvc-1d818f18ab.json
+        run: cat firebase_credentials.json
 
-      # Upload the APK to Firebase App Distribution
       - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIALS }}
+          serviceCredentialsFile: "firebase_credentials.json"
           groups: "testers"
           file: "app/build/outputs/apk/release/app-release.apk"
           releaseNotes: "Automated release from GitHub Actions"

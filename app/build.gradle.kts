@@ -25,7 +25,7 @@ android {
     signingConfigs {
         // New signing config for the new keystore
         create("release")  {
-            storeFile = file("C:/Users/commu/Desktop/OC/PROJET 16/new_keystore.jks")
+            storeFile = file("new_keystore.jks")
             storePassword = "jesusmarie1"
             keyAlias = "new_key"
             keyPassword = "jesusmarie1"
