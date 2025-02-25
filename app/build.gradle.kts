@@ -22,13 +22,24 @@ android {
         }
     }
 
+    signingConfigs {
+        // New signing config for the new keystore
+        create("release")  {
+            storeFile = file("C:/Users/commu/Desktop/OC/PROJET 16/new_keystore.jks")
+            storePassword = "jesusmarie1"
+            keyAlias = "new_key"
+            keyPassword = "jesusmarie1"
+        }
+    }
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release") // Ensure this is set
         }
     }
     compileOptions {

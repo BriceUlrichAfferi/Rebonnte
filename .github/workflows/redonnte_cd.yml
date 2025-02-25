@@ -24,7 +24,7 @@ jobs:
         run: ./gradlew assembleRelease
 
       - name: Verify APK Path
-        run: ls -la app/release
+        run: ls -la app/build/outputs/apk/release
 
       # Debugging Firebase credentials to check if the secret is set correctly
       - name: Debugging Firebase credentials
