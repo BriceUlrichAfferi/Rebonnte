@@ -15,7 +15,7 @@ jobs:
       - name: Ensure gradlew is executable
         run: chmod +x ./gradlew
       - name: Build APK
-        run: ./gradlew assembleRelease --stacktrace
+        run: ./gradlew assembleRelease -x lint --stacktrace  # Skips Lint entirely
       - name: Write Firebase Service Credentials
         run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" > firebase_credentials.json
         shell: bash

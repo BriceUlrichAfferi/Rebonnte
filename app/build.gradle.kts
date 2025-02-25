@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
-    id("org.sonarqube") version "4.4.1.3373"
+    id("org.sonarqube") version "6.0.0.5145"
 }
 
 android {
@@ -133,7 +133,6 @@ dependencies {
     testImplementation("io.insert-koin:koin-test:3.2.0")
     testImplementation("com.google.firebase:firebase-auth:21.0.7")
     testImplementation("io.mockk:mockk:1.12.0")
-    testImplementation("com.jakewharton.threetenabp:threetenabp:1.4.8")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
