@@ -12,20 +12,28 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
       - name: Ensure gradlew is executable
         run: chmod +x ./gradlew
+
       - name: Build APK
         run: ./gradlew assembleRelease -x lint --stacktrace  # Skips Lint entirely
+
+        # Debugging Firebase credentials to check if the secret is set correctly
       - name: Write Firebase Service Credentials
-        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" > firebase_credentials.json
+        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" > rebonnte-df5cf-firebase-adminsdk-fbsvc-1d818f18ab.json
         shell: bash
+
+        # Check if the Firebase credentials file was written correctly
       - name: Check Firebase credentials file
-        run: cat firebase_credentials.json
+        run: cat rebonnte-df5cf-firebase-adminsdk-fbsvc-1d818f18ab.json
+
+        # Upload the APK to Firebase App Distribution
       - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFile: "firebase_credentials.json"
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIALS }}
           groups: "testers"
           file: "app/build/outputs/apk/release/app-release.apk"
           releaseNotes: "Automated release from GitHub Actions"
