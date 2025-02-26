@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,36 +26,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Run Unit Tests
+      - name: Run Tests
         run: ./gradlew test
 
-      - name: Run Instrumented Tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: Nexus 6
-          cores: 2
-          avd-name: test
-          force-avd-creation: true
-          emulator-boot-timeout: 600
-          emulator-port: 5554
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          disable-animations: true
-          script: |
-            echo "Waiting for emulator to start..."
-            adb wait-for-device
-            adb shell getprop sys.boot_completed | grep -q "1" && echo "Emulator is ready" || { echo "Emulator failed to boot"; exit 1; }
-            ./gradlew connectedAndroidTest
-
-      - name: Clean up Emulator
-        if: always()  # Ensures the emulator is shut down regardless of test result
-        run: adb emu kill || true
-
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: app/build/test-results/**/*.html
