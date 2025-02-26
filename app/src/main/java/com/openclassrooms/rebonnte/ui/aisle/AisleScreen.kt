@@ -30,7 +30,7 @@ import com.openclassrooms.rebonnte.startDetailActivity
 
 @Composable
 fun AisleScreen(viewModel: AisleViewModel) {
-    val aisles by viewModel.aisles.collectAsState(initial = emptyList())
+    val aisles = viewModel.aisles.collectAsState().value
     val context = LocalContext.current
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
