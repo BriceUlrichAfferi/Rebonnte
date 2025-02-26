@@ -24,12 +24,15 @@ jobs:
           cache: gradle
 
       - name: Build with Gradle
-        run: gradlew.bat build
+        run: |
+          # Ensure gradlew.bat is executable
+          if (Test-Path ./gradlew.bat) { ./gradlew.bat build } else { ./gradlew build }
 
       - name: Run Instrumented Tests on Real Device
         run: |
           adb devices
-          gradlew.bat connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.device=1cc092ab2f017beb --stacktrace
+          # Replace with the actual device ID
+          ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.device=1cc072ab2f037ece --stacktrace
 
       - name: Upload Test Results
         if: always() # Runs even if tests fail
