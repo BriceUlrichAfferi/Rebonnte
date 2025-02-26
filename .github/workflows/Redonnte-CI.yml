@@ -10,6 +10,9 @@ jobs:
   build:
     runs-on: self-hosted
 
+    env:
+      ANDROID_HOME: C:\Users\commu\AppData\Local\Android\Sdk  # Adjust if your SDK is elsewhere
+
     steps:
       - uses: actions/checkout@v4
 
@@ -21,7 +24,7 @@ jobs:
           cache: gradle
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: gradlew.bat build
 
       - name: Run Instrumented Tests on Real Device
         run: |
