@@ -1,6 +1,8 @@
 name: Firebase Distribution
 on:
   push:
+    tags:
+      - 'v*'
 jobs:
   distribute:
     runs-on: ubuntu-latest

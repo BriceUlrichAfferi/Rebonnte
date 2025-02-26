@@ -8,21 +8,34 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    - name: Build with Gradle
-      run: ./gradlew build
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Run Unit Tests
+        run: ./gradlew test
+
+      - name: Run Instrumented Tests
+        run: ./gradlew connectedAndroidTest
+
+      - name: Upload Test Results
+        if: always() # Runs even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: app/build/test-results/**/*.html
+
