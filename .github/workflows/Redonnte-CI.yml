@@ -31,6 +31,10 @@ jobs:
       - name: Build with Gradle
         run: .\gradlew.bat build
 
+      - name: Run Unit Tests
+        run: |
+          .\gradlew.bat testDebugUnitTest --stacktrace
+
       - name: Run Instrumented Tests on Real Device
         run: |
           adb devices
