@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,11 +26,26 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Run Unit Tests
+      - name: Run Tests
         run: ./gradlew test
 
+      - name: Set up Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 6
+          script: echo "Emulator is ready"
+
       - name: Run Instrumented Tests
-        run: ./gradlew connectedAndroidTest
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 6
+          script: ./gradlew connectedAndroidTest
 
       - name: Upload Test Results
         if: always() # Runs even if tests fail
@@ -38,4 +53,3 @@ jobs:
         with:
           name: test-results
           path: app/build/test-results/**/*.html
-
