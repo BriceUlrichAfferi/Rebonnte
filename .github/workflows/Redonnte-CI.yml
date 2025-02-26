@@ -35,7 +35,8 @@ jobs:
         run: |
           adb devices
           # Optional: Disconnect emulator to ensure only real device is used
-          adb -s emulator-5554 emu kill || true
+          adb -s emulator-5554 emu kill
+          if ($?) { Write-Host "Emulator killed successfully" } else { Write-Host "Failed to kill emulator" }
           # Verify real device is active
           adb -s 1cc072ab2f037ece shell pm list packages
           .\gradlew.bat connectedAndroidTest --stacktrace
