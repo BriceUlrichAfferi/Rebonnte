@@ -44,10 +44,14 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
           script: |
+            echo "Waiting for emulator to start..."
             adb wait-for-device
-            adb shell getprop sys.boot_completed | grep -q "1"
-            echo "Emulator is ready"
+            adb shell getprop sys.boot_completed | grep -q "1" && echo "Emulator is ready" || { echo "Emulator failed to boot"; exit 1; }
             ./gradlew connectedAndroidTest
+
+      - name: Clean up Emulator
+        if: always()  # Ensures the emulator is shut down regardless of test result
+        run: adb emu kill || true
 
       - name: Upload Test Results
         if: always()
