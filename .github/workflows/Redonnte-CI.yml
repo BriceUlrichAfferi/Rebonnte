@@ -7,11 +7,11 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test-on-real-device:
     runs-on: self-hosted
 
     env:
-      ANDROID_HOME: C:\Users\commu\AppData\Local\Android\Sdk  # Adjust if your SDK is elsewhere
+      ANDROID_HOME: C:\Users\commu\AppData\Local\Android\Sdk
 
     steps:
       - uses: actions/checkout@v4
@@ -23,19 +23,25 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Build with Gradle
+      - name: Set up Android SDK Tools
         run: |
-          # Ensure gradlew.bat is executable
-          if (Test-Path ./gradlew.bat) { ./gradlew.bat build } else { ./gradlew build }
+          $env:Path += ";C:\Users\commu\AppData\Local\Android\Sdk\platform-tools"
+          adb devices
+
+      - name: Build with Gradle
+        run: .\gradlew.bat build
 
       - name: Run Instrumented Tests on Real Device
         run: |
           adb devices
-          # Replace with the actual device ID
-          ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.device=1cc072ab2f037ece --stacktrace
+          # Optional: Disconnect emulator to ensure only real device is used
+          adb -s emulator-5554 emu kill || true
+          # Verify real device is active
+          adb -s 1cc072ab2f037ece shell pm list packages
+          .\gradlew.bat connectedAndroidTest --stacktrace
 
       - name: Upload Test Results
-        if: always() # Runs even if tests fail
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
