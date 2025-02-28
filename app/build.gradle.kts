@@ -14,7 +14,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -133,7 +133,7 @@ dependencies {
     testImplementation("io.insert-koin:koin-test:3.2.0")
     testImplementation("com.google.firebase:firebase-auth:21.0.7")
     testImplementation("io.mockk:mockk:1.12.0")
-    testImplementation(libs.junit)
+       testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

@@ -80,13 +80,13 @@ fun PasswordRecoveryScreen(
 @Composable
 fun PasswordRecoveryTopBar(navController: NavController) {
     TopAppBar(
-        title = { Text(text = stringResource(id = R.string.password_recovery), color = Color.White) },
+        title = { Text(text = stringResource(id = R.string.password_recovery), color = Color.Black) },
         navigationIcon = {
             IconButton(onClick = { navController.navigateUp() }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = stringResource(id = R.string.contentDescription_go_back),
-                    tint = Color.White
+                    tint = Color.Black
                 )
             }
         }
@@ -114,7 +114,7 @@ fun PasswordRecoveryContent(
             text = stringResource(id = R.string.password_recovery_label),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = Color.Black,
             textAlign = TextAlign.Center
         )
 
@@ -137,18 +137,21 @@ fun EmailInputField(email: MutableState<TextFieldValue>, emailError: MutableStat
     TextField(
         value = email.value,
         onValueChange = { email.value = it },
-        label = { Text(text = stringResource(id = R.string.email), color = Color.White) },
+        label = { Text(text = stringResource(id = R.string.email), color = Color.Black) },
         colors = TextFieldDefaults.colors(
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            disabledTextColor = Color.Gray,
             errorTextColor = Color.Red,
-            focusedIndicatorColor = Color.White,
-            unfocusedIndicatorColor = Color.White,
-            focusedLabelColor = Color.White,
-            unfocusedLabelColor = Color.White,
+            focusedIndicatorColor = Color.Black,
+            unfocusedIndicatorColor = Color.Black,
+            errorIndicatorColor = Color.Black,
+            focusedLabelColor = Color.Black,
+            unfocusedLabelColor = Color.Black,
             focusedContainerColor = colorResource(id = R.color.teal_700),
             unfocusedContainerColor = colorResource(id = R.color.teal_700),
-            errorContainerColor = Color.White
+            disabledContainerColor = Color.LightGray,
+            errorContainerColor = Color.Red
         ),
         isError = emailError.value != null,
         modifier = Modifier.fillMaxWidth()
@@ -179,7 +182,7 @@ fun SendResetEmailButton(
         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
         shape = RectangleShape
     ) {
-        Text("Send Reset Email", color = Color.White)
+        Text("Send Reset Email", color = Color.Black)
     }
 }
 
@@ -187,16 +190,16 @@ fun SendResetEmailButton(
 fun PasswordResetDialog(onDismissDialog: () -> Unit, email: String) {
     AlertDialog(
         onDismissRequest = onDismissDialog,
-        title = { Text("Password Reset", color = Color.White) },
+        title = { Text("Password Reset", color = Color.Black) },
         text = {
             Text(
                 text = stringResource(id = R.string.password_recovery_message, email),
-                color = Color.White
+                color = Color.Black
             )
         },
         confirmButton = {
             TextButton(onClick = onDismissDialog) {
-                Text("OK", color = Color.White)
+                Text("OK", color = Color.Black)
             }
         }
     )

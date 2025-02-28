@@ -23,7 +23,7 @@ class AisleRepository(private val firestore: FirebaseFirestore) {
                 val aisleList = snapshot?.documents?.mapNotNull { it.toObject(Aisle::class.java) } ?: emptyList()
                 _aisles.value = aisleList
                 if (aisleList.isEmpty()) {
-                    addAisle(Aisle("I am Here Aisle"))
+                    addAisle(Aisle("Aisle 1"))
                 }
             }
     }

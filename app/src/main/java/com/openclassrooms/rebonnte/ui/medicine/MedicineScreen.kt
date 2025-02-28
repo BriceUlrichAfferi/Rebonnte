@@ -2,6 +2,7 @@ package com.openclassrooms.rebonnte.ui.medicine
 
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,17 +29,31 @@ import com.openclassrooms.rebonnte.ui.aisle.AisleViewModel
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 
 @Composable
-fun MedicineScreen(medicineViewModel: MedicineViewModel = koinViewModel(), aisleViewModel: AisleViewModel = koinViewModel()) {
+fun MedicineScreen(
+    navController: NavController, // Add NavController parameter
+    medicineViewModel: MedicineViewModel = koinViewModel(),
+    aisleViewModel: AisleViewModel = koinViewModel()
+) {
     val medicines by medicineViewModel.medicines.collectAsState(initial = emptyList())
-    val context = LocalContext.current
 
+    // Handle back press to navigate to "aisle"
+    BackHandler(enabled = true) {
+        navController.navigate("aisle") {
+            // Clear the back stack up to "aisle" to avoid stacking multiple instances
+            popUpTo(navController.graph.startDestinationId) {
+                inclusive = false
+            }
+            launchSingleTop = true
+        }
+    }
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(medicines) { medicine ->
             MedicineItem(
                 medicine = medicine,
-                onClick = { startDetailActivity(context, medicine.name) },
+                onClick = { navController.navigate("medicine_detail/${medicine.name}") },
                 onDelete = { medicineViewModel.deleteMedicine(medicine.id) }
             )
         }
@@ -46,7 +61,11 @@ fun MedicineScreen(medicineViewModel: MedicineViewModel = koinViewModel(), aisle
 }
 
 @Composable
-fun MedicineItem(medicine: Medicine, onClick: () -> Unit, onDelete: () -> Unit) {
+fun MedicineItem(
+    medicine: Medicine,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
     var showDialog by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
@@ -85,11 +104,4 @@ fun MedicineItem(medicine: Medicine, onClick: () -> Unit, onDelete: () -> Unit) 
             }
         )
     }
-}
-
-private fun startDetailActivity(context: Context, name: String) {
-    val intent = Intent(context, MedicineDetailActivity::class.java).apply {
-        putExtra("nameMedicine", name)
-    }
-    context.startActivity(intent)
 }

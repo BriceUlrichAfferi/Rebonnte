@@ -53,7 +53,7 @@ fun NameSurnameInputScreen(
             text = stringResource(id = R.string.enter_name_surname),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = Color.Black
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -63,24 +63,24 @@ fun NameSurnameInputScreen(
             onValueChange = onNameChange,
             label = { Text(
                 text = stringResource(id = R.string.name),
-                color = Color.White
+                color = Color.Black
             ) },
             isError = nameError != null,
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
                 disabledTextColor = Color.Gray,
                 errorTextColor = Color.Red,
-                focusedIndicatorColor = Color.White,
-                unfocusedIndicatorColor = Color.White,
-                errorIndicatorColor = Color.White,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.White,
+                focusedIndicatorColor = Color.Black,
+                unfocusedIndicatorColor = Color.Black,
+                errorIndicatorColor = Color.Black,
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Black,
                 focusedContainerColor = colorResource(id = R.color.teal_700),
                 unfocusedContainerColor = colorResource(id = R.color.teal_700),
                 disabledContainerColor = Color.LightGray,
-                errorContainerColor = Color.White
+                errorContainerColor = Color.Red
             )
         )
         nameError?.let {
@@ -99,20 +99,20 @@ fun NameSurnameInputScreen(
             onValueChange = onSurnameChange,
             label = {
                 Text("Surname",
-                    color = Color.White)
+                    color = Color.Black)
             },
             isError = surnameError != null,
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
                 disabledTextColor = Color.Gray,
                 errorTextColor = Color.Red,
-                focusedIndicatorColor = Color.White,
-                unfocusedIndicatorColor = Color.White,
-                errorIndicatorColor = Color.White,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.White,
+                focusedIndicatorColor = Color.Black,
+                unfocusedIndicatorColor = Color.Black,
+                errorIndicatorColor = Color.Black,
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Black,
                 focusedContainerColor = colorResource(id = R.color.teal_700),
                 unfocusedContainerColor = colorResource(id = R.color.teal_700),
                 disabledContainerColor = Color.LightGray,

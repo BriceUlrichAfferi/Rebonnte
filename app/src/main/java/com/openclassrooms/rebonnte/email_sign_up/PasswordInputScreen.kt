@@ -90,7 +90,7 @@ fun HeaderText() {
         text = stringResource(id = R.string.enter_password),
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
-        color = Color.White
+        color = Color.Black
     )
 }
 
@@ -105,7 +105,7 @@ fun PasswordField(
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
-        label = { Text(text = stringResource(id = R.string.password), color = Color.White) },
+        label = { Text(text = stringResource(id = R.string.password), color = Color.Black) },
         isError = passwordError != null,
         modifier = Modifier.fillMaxWidth(),
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -116,19 +116,19 @@ fun PasswordField(
             )
         },
         colors = TextFieldDefaults.colors(
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
             disabledTextColor = Color.Gray,
             errorTextColor = Color.Red,
-            focusedIndicatorColor = Color.White,
-            unfocusedIndicatorColor = Color.White,
-            errorIndicatorColor = Color.White,
-            focusedLabelColor = Color.White,
-            unfocusedLabelColor = Color.White,
+            focusedIndicatorColor = Color.Black,
+            unfocusedIndicatorColor = Color.Black,
+            errorIndicatorColor = Color.Black,
+            focusedLabelColor = Color.Black,
+            unfocusedLabelColor = Color.Black,
             focusedContainerColor = colorResource(id = R.color.teal_700),
             unfocusedContainerColor = colorResource(id = R.color.teal_700),
             disabledContainerColor = Color.LightGray,
-            errorContainerColor = Color.White
+            errorContainerColor = Color.Red
         )
     )
 }

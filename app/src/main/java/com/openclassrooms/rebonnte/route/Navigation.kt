@@ -14,7 +14,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.openclassrooms.rebonnte.email_log_in.LoginScreen
 import com.openclassrooms.rebonnte.email_log_in.PasswordRecoveryScreen
 import com.openclassrooms.rebonnte.email_sign_up.SignUpScreen
@@ -26,6 +28,7 @@ import com.openclassrooms.rebonnte.sign_in.SignInViewModel
 import com.openclassrooms.rebonnte.sign_in.Userdata
 import com.openclassrooms.rebonnte.ui.aisle.AisleScreen
 import com.openclassrooms.rebonnte.ui.aisle.AisleViewModel
+import com.openclassrooms.rebonnte.ui.medicine.MedicineDetailScreen
 import com.openclassrooms.rebonnte.ui.medicine.MedicineScreen
 import com.openclassrooms.rebonnte.ui.medicine.MedicineViewModel
 
@@ -36,7 +39,6 @@ fun NavGraphBuilder.appNavigation(
     googleAuthUiClient: GoogleAuthUiClient,
     emailAuthClient: EmailAuthClient,
     lifecycleScope: LifecycleCoroutineScope
-
 ) {
     composable("sign_in") {
         val viewModel = viewModel<SignInViewModel>()
@@ -44,12 +46,8 @@ fun NavGraphBuilder.appNavigation(
 
         SignInScreen(
             state = state,
-            onGoogleSignInClick = {
-                navController.navigate("google_sign_in")
-            },
-            onEmailSignInClick = {
-                navController.navigate("email_sign_in")
-            }
+            onGoogleSignInClick = { navController.navigate("google_sign_in") },
+            onEmailSignInClick = { navController.navigate("email_sign_in") }
         )
     }
 
@@ -89,28 +87,20 @@ fun NavGraphBuilder.appNavigation(
         )
     }
 
-
     composable("aisle") {
-
         val aisleViewModel = viewModel<AisleViewModel>()
-        AisleScreen(aisleViewModel)
+        AisleScreen(navController, aisleViewModel)
     }
-
 
     composable("medicine") {
-
         val medicineViewModel = viewModel<MedicineViewModel>()
-        MedicineScreen(medicineViewModel)
-
+        MedicineScreen(navController, medicineViewModel) // Pass navController
     }
-
-
-
 
     composable("sign_up") {
         SignUpScreen(
             onLoginSuccess = {
-                navController.navigate("aisle, medicine") {
+                navController.navigate("aisle") { // Fixed from "aisle, medicine" to "aisle"
                     popUpTo("sign_up") { inclusive = true }
                 }
             },
@@ -124,5 +114,18 @@ fun NavGraphBuilder.appNavigation(
 
     composable("password_recovery") {
         PasswordRecoveryScreen(navController = navController)
+    }
+
+    composable(
+        "medicine_detail/{medicineName}", // Consistent route name
+        arguments = listOf(navArgument("medicineName") { type = NavType.StringType })
+    ) { backStackEntry ->
+        val medicineName = backStackEntry.arguments?.getString("medicineName") ?: "Unknown"
+        MedicineDetailScreen(
+            name = medicineName,
+            viewModel = viewModel<MedicineViewModel>(),
+            onBack = { navController.popBackStack() },
+
+        )
     }
 }

@@ -108,14 +108,7 @@ fun LoginTopAppBar(currentStep: MutableState<Int>, navController: NavController)
 
 @Composable
 fun LoginScreenLogo() {
-    Image(
-        painter = painterResource(id = R.drawable.eventorias777ff),
-        contentDescription = "App Icon",
-        contentScale = ContentScale.Fit,
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(27f / 25f)
-    )
+    Text(text = stringResource(id = R.string.app_name_maj), color = Color.Black, fontSize = 20.sp)
     Spacer(modifier = Modifier.height(16.dp))
 }
 
@@ -193,13 +186,13 @@ fun PasswordStep(
         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
         shape = RectangleShape,
     ) {
-        Text(text = stringResource(id = R.string.sign_in), color = Color.White)
+        Text(text = stringResource(id = R.string.sign_in), color = Color.Black)
     }
 
     Spacer(modifier = Modifier.height(16.dp))
 
     TextButton(onClick = onForgotPassword) {
-        Text("Trouble signing in?", color = Color.White)
+        Text("Trouble signing in?", color = Color.Black)
     }
 }
 

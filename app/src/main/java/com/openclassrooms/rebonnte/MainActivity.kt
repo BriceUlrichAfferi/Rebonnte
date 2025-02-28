@@ -40,10 +40,11 @@ import com.openclassrooms.rebonnte.bottom_navigation.BottomNavBar
 import com.openclassrooms.rebonnte.route.appNavigation
 import com.openclassrooms.rebonnte.sign_in.EmailAuthClient
 import com.openclassrooms.rebonnte.sign_in.GoogleAuthUiClient
-import com.openclassrooms.rebonnte.ui.aisle.AisleDetailActivity
+import com.openclassrooms.rebonnte.ui.aisle.AisleDetailScreen
 import com.openclassrooms.rebonnte.ui.aisle.AisleScreen
 import com.openclassrooms.rebonnte.ui.aisle.AisleViewModel
-import com.openclassrooms.rebonnte.ui.medicine.AddMedicineActivity
+import com.openclassrooms.rebonnte.ui.medicine.AddMedicineScreen
+import com.openclassrooms.rebonnte.ui.medicine.MedicineDetailScreen
 import com.openclassrooms.rebonnte.ui.medicine.MedicineScreen
 import com.openclassrooms.rebonnte.ui.medicine.MedicineViewModel
 import com.openclassrooms.rebonnte.ui.theme.RebonnteTheme
@@ -160,19 +161,15 @@ fun MyApp(
                         currentRoute = currentRoute,
                         googleAuthUiClient = googleAuthUiClient,
                         emailAuthClient = emailAuthClient,
-                        onSignOut = {
-                            // Optional: Add any additional cleanup here if needed
-                        }
+                        onSignOut = { /* Optional: Add any additional cleanup here if needed */ }
                     )
                 }
             },
             floatingActionButton = {
-                val context = LocalContext.current
                 if (currentRoute in listOf("aisle", "medicine")) {
                     FloatingActionButton(onClick = {
                         if (currentRoute == "medicine") {
-                            val intent = Intent(context, AddMedicineActivity::class.java)
-                            context.startActivity(intent)
+                            navController.navigate("add_medicine") // Replaced Intent with navigation
                         } else if (currentRoute == "aisle") {
                             aisleViewModel.addRandomAisle()
                         }
@@ -188,13 +185,35 @@ fun MyApp(
                 startDestination = "sign_in"
             ) {
                 appNavigation(navController, googleAuthUiClient, emailAuthClient, lifecycleScope)
-                composable("aisle") { AisleScreen(aisleViewModel) }
-                composable("medicine") { MedicineScreen(medicineViewModel) }
+                composable("aisle") { AisleScreen(navController, aisleViewModel) }
+                composable("medicine") { MedicineScreen(navController, medicineViewModel) }
+                composable("aisle_detail/{aisleName}") { backStackEntry ->
+                    val aisleName = backStackEntry.arguments?.getString("aisleName") ?: "Unknown"
+                    AisleDetailScreen(
+                        name = aisleName,
+                        viewModel = medicineViewModel,
+                        navController = navController
+                    )
+                }
+                composable("medicine_detail/{medicineName}") { backStackEntry ->
+                    val medicineName = backStackEntry.arguments?.getString("medicineName") ?: "Unknown"
+                    MedicineDetailScreen(
+                        name = medicineName,
+                        viewModel = medicineViewModel,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable("add_medicine") { // Added new route
+                    AddMedicineScreen(
+                        navController = navController,
+                        medicineViewModel = medicineViewModel,
+                        aisleViewModel = aisleViewModel
+                    )
+                }
             }
         }
     }
 }
-
 
 @Composable
 fun currentRoute(navController: NavController): String? {
@@ -271,11 +290,4 @@ fun EmbeddedSearchBar(
             }
         }
     }
-}
-
-fun startDetailActivity(context: Context, aisleName: String) {
-    val intent = Intent(context, AisleDetailActivity::class.java).apply {
-        putExtra("nameAisle", aisleName)
-    }
-    context.startActivity(intent)
 }

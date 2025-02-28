@@ -33,7 +33,9 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.common.SignInButton
 import com.openclassrooms.rebonnte.R
@@ -61,14 +63,7 @@ fun SignInScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.eventorias777ff),
-            contentDescription = "Logo of Eventorias",
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(16f / 25f)
-        )
+        Text(text = stringResource(id = R.string.app_name_maj), color = Color.Black, fontSize = 20.sp)
 
         Spacer(modifier = Modifier.height(16.dp))
 

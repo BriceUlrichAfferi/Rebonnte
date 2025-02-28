@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -112,14 +113,7 @@ fun SignUpTopBar(currentStep: MutableState<Int>, navController: NavController) {
 
 @Composable
 fun DisplayAppIcon() {
-    Image(
-        painter = painterResource(id = R.drawable.eventorias777ff),
-        contentDescription = "App Icon",
-        contentScale = ContentScale.Fit,
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(27f / 25f)
-    )
+    Text(text = stringResource(id = R.string.app_name_maj), color = Color.Black, fontSize = 20.sp)
 }
 
 fun handleEmailValidation(

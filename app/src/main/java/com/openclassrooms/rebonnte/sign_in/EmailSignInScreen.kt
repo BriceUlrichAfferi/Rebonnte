@@ -76,14 +76,7 @@ fun EmailSignInScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.eventorias777ff),
-                    contentDescription = "App Icon",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(27f / 25f)
-                )
+                Text(text = stringResource(id = R.string.app_name_maj), color = Color.Black, fontSize = 20.sp)
 
                 Spacer(modifier = Modifier.height(16.dp))
 

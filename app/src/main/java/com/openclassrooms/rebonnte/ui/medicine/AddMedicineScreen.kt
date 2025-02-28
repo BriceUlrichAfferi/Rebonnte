@@ -1,9 +1,5 @@
 package com.openclassrooms.rebonnte.ui.medicine
 
-import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -12,53 +8,33 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.openclassrooms.rebonnte.ui.aisle.AisleViewModel
-import com.openclassrooms.rebonnte.ui.theme.RebonnteTheme
-import com.openclassrooms.rebonnte.utils.findActivity
-import org.koin.androidx.compose.koinViewModel
-
-class AddMedicineActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            RebonnteTheme {
-                val medicineViewModel: MedicineViewModel = koinViewModel()
-                val aisleViewModel: AisleViewModel = koinViewModel()
-                AddMedicineScreen(
-                    medicineViewModel = medicineViewModel,
-                    aisleViewModel = aisleViewModel
-                ) {
-                    Toast.makeText(this, "Medicine added", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-            }
-        }
-    }
-}
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMedicineScreen(
+    navController: NavController,
     medicineViewModel: MedicineViewModel,
     aisleViewModel: AisleViewModel,
-    onMedicineAdded: () -> Unit
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
-    val context = LocalContext.current
+    val aisles by aisleViewModel.aisles.collectAsState(initial = emptyList())
     var name by remember { mutableStateOf("") }
     var stock by remember { mutableStateOf("") }
     var selectedAisle by remember { mutableStateOf("") }
-    val aisles by aisleViewModel.aisles.collectAsState(initial = emptyList())
     var expanded by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Add Medicine") },
                 navigationIcon = {
-                    IconButton(onClick = { context.findActivity().finish() }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -66,7 +42,8 @@ fun AddMedicineScreen(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -107,7 +84,7 @@ fun AddMedicineScreen(
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                     },
                     modifier = Modifier
-                        .menuAnchor() // Anchor for dropdown positioning
+                        .menuAnchor()
                         .fillMaxWidth()
                 )
                 ExposedDropdownMenu(
@@ -137,7 +114,9 @@ fun AddMedicineScreen(
             Button(
                 onClick = {
                     if (name.isBlank() || stock.isBlank() || selectedAisle.isBlank()) {
-                        Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Please fill all fields")
+                        }
                     } else {
                         val newMedicine = Medicine(
                             name = name,
@@ -145,7 +124,10 @@ fun AddMedicineScreen(
                             nameAisle = selectedAisle
                         )
                         medicineViewModel.addMedicine(newMedicine)
-                        onMedicineAdded()
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Medicine added")
+                        }
+                        navController.popBackStack() // Navigate back after adding
                     }
                 },
                 modifier = Modifier.align(Alignment.End)
