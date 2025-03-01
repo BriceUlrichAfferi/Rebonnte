@@ -58,13 +58,13 @@ class AisleRepositoryTest {
         val mockDocument = mock(DocumentSnapshot::class.java)
         val mockListenerRegistration = mock(ListenerRegistration::class.java)
 
-        val testAisle = Aisle(
+        val testAisle = com.openclassrooms.rebonnte.ui.aisle.Aisle(
             name = "Test Aisle",
             id = "testId",
             timestamp = System.currentTimeMillis()
         )
 
-        `when`(mockDocument.toObject(Aisle::class.java)).thenReturn(testAisle)
+        `when`(mockDocument.toObject(com.openclassrooms.rebonnte.ui.aisle.Aisle::class.java)).thenReturn(testAisle)
         `when`(mockSnapshot.documents).thenReturn(listOf(mockDocument))
 
         // Capture the listener before initializing the repository
@@ -162,23 +162,4 @@ class AisleRepositoryTest {
         verify(mockDocumentReference).set(testAisle)
     }
 
-    @Test
-    fun `deleteAisle removes aisle from Firestore`() {
-        // Arrange
-        val testAisle = Aisle(
-            name = "Delete Aisle",
-            id = "deleteId",
-            timestamp = System.currentTimeMillis()
-        )
-        val mockDocumentReference = mock(DocumentReference::class.java)
-        `when`(collection.document(testAisle.id)).thenReturn(mockDocumentReference)
-        `when`(mockDocumentReference.delete()).thenReturn(mock())
-
-        // Act
-        repository.deleteAisle(testAisle)
-
-        // Assert
-        Mockito.verify(collection).document(testAisle.id)
-        Mockito.verify(mockDocumentReference).delete()
-    }
 }

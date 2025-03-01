@@ -76,7 +76,7 @@ class MedicineRepositoryTest {
 
         // Mock Firestore setup
         `when`(mockFirestore.collection("medicines")).thenReturn(mockCollection)
-        `when`(mockDocument.id).thenReturn("med1")
+        `when`(mockDocument.id).thenReturn("med1") // Mock document ID
         `when`(mockDocument.toObject(Medicine::class.java)).thenReturn(testMedicine)
         `when`(mockSnapshot.documents).thenReturn(listOf(mockDocument))
 
