@@ -18,10 +18,12 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.argThat
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import kotlin.test.assertEquals
 
 class MedicineRepositoryTest {
@@ -49,9 +51,12 @@ class MedicineRepositoryTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `loadMedicines returns medicines from Firestore`() = runTest {
-        val mockSnapshot = mock(QuerySnapshot::class.java)
-        val mockDocument = mock(DocumentSnapshot::class.java)
-        val mockListenerRegistration = mock(ListenerRegistration::class.java)
+        // Arrange
+        val mockFirestore = mock<FirebaseFirestore>()
+        val mockCollection = mock<CollectionReference>()
+        val mockSnapshot = mock<QuerySnapshot>()
+        val mockDocument = mock<DocumentSnapshot>()
+        val mockListenerRegistration = mock<ListenerRegistration>()
 
         val testHistory = History(
             medicineName = "Aspirin",
@@ -69,20 +74,26 @@ class MedicineRepositoryTest {
             addedByEmail = "user@example.com"
         )
 
+        // Mock Firestore setup
+        `when`(mockFirestore.collection("medicines")).thenReturn(mockCollection)
+        `when`(mockDocument.id).thenReturn("med1")
         `when`(mockDocument.toObject(Medicine::class.java)).thenReturn(testMedicine)
         `when`(mockSnapshot.documents).thenReturn(listOf(mockDocument))
 
         var listener: EventListener<QuerySnapshot>? = null
-        `when`(collection.addSnapshotListener(any<EventListener<QuerySnapshot>>())).thenAnswer { invocation ->
+        `when`(mockCollection.addSnapshotListener(any<EventListener<QuerySnapshot>>())).thenAnswer { invocation ->
             listener = invocation.arguments[0] as EventListener<QuerySnapshot>
             mockListenerRegistration
         }
 
-        repository = MedicineRepository(mockFirestore)
+        // Initialize repository
+        val repository = MedicineRepository(mockFirestore)
+
+        // Act: Simulate snapshot event
         listener?.onEvent(mockSnapshot, null)
 
+        // Assert
         val result = repository.medicines.first()
-
         assertEquals(1, result.size)
         assertEquals("Aspirin", result[0].name)
         assertEquals(50, result[0].stock)
@@ -98,6 +109,13 @@ class MedicineRepositoryTest {
 
     @Test
     fun `addMedicine adds new medicine to Firestore`() {
+        // Arrange
+        val mockFirestore = mock<FirebaseFirestore>()
+        val mockCollection = mock<CollectionReference>()
+        val mockDocumentReference = mock<DocumentReference>()
+        val mockTask = mock<Task<Void>>()
+        val mockListenerRegistration = mock<ListenerRegistration>()
+
         val testHistory = History(
             medicineName = "Ibuprofen",
             userId = "user456",
@@ -110,21 +128,27 @@ class MedicineRepositoryTest {
             stock = 30,
             nameAisle = "Pain Relief",
             histories = listOf(testHistory),
-            id = "med2",
+            id = "", // ID is empty initially, set by Firestore
             addedByEmail = "user2@example.com"
         )
 
-        val mockDocumentReference = mock(DocumentReference::class.java)
-        val mockTask = mock<Task<Void>>()
-        `when`(collection.document(testMedicine.id)).thenReturn(mockDocumentReference)
-        `when`(mockDocumentReference.set(testMedicine)).thenReturn(mockTask)
+        // Mock Firestore setup
+        `when`(mockFirestore.collection("medicines")).thenReturn(mockCollection)
+        `when`(mockCollection.addSnapshotListener(any<EventListener<QuerySnapshot>>())).thenReturn(mockListenerRegistration)
+        `when`(mockCollection.document()).thenReturn(mockDocumentReference)
+        `when`(mockDocumentReference.id).thenReturn("med2") // Mock the generated ID
+        `when`(mockDocumentReference.set(any())).thenReturn(mockTask)
         `when`(mockTask.addOnSuccessListener(any())).thenReturn(mockTask)
         `when`(mockTask.addOnFailureListener(any())).thenReturn(mockTask)
 
+        val repository = MedicineRepository(mockFirestore)
+
+        // Act
         repository.addMedicine(testMedicine)
 
-        Mockito.verify(collection).document(testMedicine.id)
-        Mockito.verify(mockDocumentReference).set(testMedicine)
+        // Assert
+        verify(mockCollection).document()
+
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -127,7 +127,7 @@ fun AddMedicineScreen(
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar("Medicine added")
                         }
-                        navController.popBackStack() // Navigate back after adding
+                        navController.popBackStack()
                     }
                 },
                 modifier = Modifier.align(Alignment.End)

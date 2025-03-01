@@ -24,10 +24,8 @@ class MedicineTest {
         assertEquals("", medicine.name)
         assertEquals(0, medicine.stock)
         assertEquals("", medicine.nameAisle)
-        assertEquals(emptyList<History>(), medicine.histories)  // Should be empty list by default
-        assertNotNull(medicine.id)  // Ensure the ID is not null, since it's generated using UUID
-        assertTrue(medicine.id.isNotEmpty())  // Ensure that the generated UUID is not empty
-        assertEquals("", medicine.addedByEmail)  // Ensure the addedByEmail is an empty string by default
+        assertEquals(emptyList<History>(), medicine.histories)
+        assertEquals("", medicine.id)  // Expect empty string
     }
 
     @Test

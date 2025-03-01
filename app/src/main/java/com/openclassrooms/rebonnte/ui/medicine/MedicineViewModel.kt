@@ -15,7 +15,7 @@ class MedicineViewModel(private val repository: MedicineRepository) : ViewModel(
         if (aisles.isEmpty()) return
         val addingUserEmail = FirebaseAuth.getInstance().currentUser?.email ?: "anonymous"
         val newMedicine = Medicine(
-            name = "Medicine ${Random().nextInt(1000)}", // Use random to avoid duplicates
+            name = "Medicine ${Random().nextInt(1000)}",
             stock = Random().nextInt(100),
             nameAisle = aisles[Random().nextInt(aisles.size)].name,
             histories = emptyList(),
@@ -29,6 +29,12 @@ class MedicineViewModel(private val repository: MedicineRepository) : ViewModel(
         val updatedMedicine = medicine.copy(addedByEmail = addingUserEmail)
         repository.addMedicine(updatedMedicine)
     }
+
+    fun getAisleForMedicine(medicineId: String): Aisle {
+        val medicine = medicines.value.find { it.id == medicineId }
+        return Aisle(name = medicine?.nameAisle ?: "Unknown")
+    }
+
 
     fun updateMedicine(medicine: Medicine) {
         repository.updateMedicine(medicine)
@@ -52,5 +58,9 @@ class MedicineViewModel(private val repository: MedicineRepository) : ViewModel(
 
     fun sortByNone() {
         repository.sortByNone()
+    }
+
+    fun refreshMedicines() {
+        repository.loadMedicines()
     }
 }

@@ -21,9 +21,9 @@ class AisleTest {
 
         // Ensure that the properties are initialized with default values
         assertEquals("", aisle.name)
-        assertNotNull(aisle.id)  // Ensure the ID is not null, since it's generated using UUID
-        assertTrue(aisle.id.isNotEmpty())  // Ensure that the generated UUID is not empty
-        assertTrue(aisle.timestamp <= System.currentTimeMillis())  // Ensure timestamp is a valid time
+        assertNotNull(aisle.id)
+        assertTrue(aisle.id.isNotEmpty())
+        assertTrue(aisle.timestamp <= System.currentTimeMillis())
     }
 
     @Test

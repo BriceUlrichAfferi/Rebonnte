@@ -5,9 +5,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class SignInViewModel : ViewModel() {
+
+class SignInViewModel(
+    private val googleAuthUiClient: GoogleAuthUiClient,
+    private val emailAuthClient: EmailAuthClient
+) : ViewModel() {
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
+
+    init {
+        val signedInUser = googleAuthUiClient.getSignedInUser() ?: emailAuthClient.getSignedInUser()
+        if (signedInUser != null) {
+            _state.update { it.copy(userData = signedInUser, isSignInSuccessful = true) }
+        }
+    }
 
     fun onSignInResult(result: SignInResult) {
         _state.update { currentState ->
@@ -25,7 +36,6 @@ class SignInViewModel : ViewModel() {
 
     fun getUserData(): Userdata? = _state.value.userData
 
-    // Add this to update the state after successful sign-in
     fun onSignInSuccess(userData: Userdata) {
         _state.update { it.copy(userData = userData, isSignInSuccessful = true) }
     }

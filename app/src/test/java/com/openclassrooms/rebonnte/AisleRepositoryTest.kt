@@ -1,5 +1,6 @@
 package com.openclassrooms.rebonnte
 
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -17,10 +18,12 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.argThat
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -55,13 +58,13 @@ class AisleRepositoryTest {
         val mockDocument = mock(DocumentSnapshot::class.java)
         val mockListenerRegistration = mock(ListenerRegistration::class.java)
 
-        val testAisle = com.openclassrooms.rebonnte.ui.aisle.Aisle(
+        val testAisle = Aisle(
             name = "Test Aisle",
             id = "testId",
             timestamp = System.currentTimeMillis()
         )
 
-        `when`(mockDocument.toObject(com.openclassrooms.rebonnte.ui.aisle.Aisle::class.java)).thenReturn(testAisle)
+        `when`(mockDocument.toObject(Aisle::class.java)).thenReturn(testAisle)
         `when`(mockSnapshot.documents).thenReturn(listOf(mockDocument))
 
         // Capture the listener before initializing the repository
@@ -89,13 +92,22 @@ class AisleRepositoryTest {
     @Test
     fun `loadAisles adds default aisle when empty`() = runTest {
         // Arrange
-        val mockSnapshot = mock(QuerySnapshot::class.java)
-        val mockListenerRegistration = mock(ListenerRegistration::class.java)
-        val mockDocumentReference = mock(DocumentReference::class.java)
+        val mockFirestore = mock<FirebaseFirestore>()
+        val mockCollection = mock<CollectionReference>()
+        val mockQuery = mock<Query>()
+        val mockSnapshot = mock<QuerySnapshot>()
+        val mockListenerRegistration = mock<ListenerRegistration>()
+        val mockDocumentReference = mock<DocumentReference>()
+        val mockTask = mock<Task<Void>>()
 
+        // Mock Firestore setup
+        `when`(mockFirestore.collection("aisles")).thenReturn(mockCollection)
+        `when`(mockCollection.orderBy("timestamp", Query.Direction.ASCENDING)).thenReturn(mockQuery)
         `when`(mockSnapshot.documents).thenReturn(emptyList())
-        `when`(collection.document(any())).thenReturn(mockDocumentReference)
-        `when`(mockDocumentReference.set(any())).thenReturn(mock())
+        `when`(mockCollection.document(any())).thenReturn(mockDocumentReference)
+        `when`(mockDocumentReference.set(any())).thenReturn(mockTask)
+        `when`(mockTask.addOnSuccessListener(any())).thenReturn(mockTask) // Chainable Task
+        `when`(mockTask.addOnFailureListener(any())).thenReturn(mockTask) // Chainable Task
 
         var listener: EventListener<QuerySnapshot>? = null
         `when`(mockQuery.addSnapshotListener(any<EventListener<QuerySnapshot>>())).thenAnswer { invocation ->
@@ -103,38 +115,57 @@ class AisleRepositoryTest {
             mockListenerRegistration
         }
 
-        repository = AisleRepository(mockFirestore)
+        // Initialize repository
+        val repository = AisleRepository(mockFirestore)
+
+        // Act: Simulate empty snapshot
         listener?.onEvent(mockSnapshot, null)
 
-        // Act and Assert
-        Mockito.verify(collection).document(any())
-        Mockito.verify(mockDocumentReference).set(any<com.openclassrooms.rebonnte.ui.aisle.Aisle>())
+        // Assert: Verify that a default aisle is added
+        verify(mockCollection).document(any())
+        verify(mockDocumentReference).set(argThat { it is Aisle && it.name == "Aisle 1" })
     }
 
     @Test
     fun `addAisle adds new aisle to Firestore`() {
         // Arrange
-        val testAisle = com.openclassrooms.rebonnte.ui.aisle.Aisle(
+        val mockFirestore = mock<FirebaseFirestore>()
+        val mockCollection = mock<CollectionReference>()
+        val mockQuery = mock<Query>()
+        val mockDocumentReference = mock<DocumentReference>()
+        val mockTask = mock<Task<Void>>()
+        val mockListenerRegistration = mock<ListenerRegistration>()
+
+        val testAisle = Aisle(
             name = "New Aisle",
             id = "newId",
             timestamp = System.currentTimeMillis()
         )
-        val mockDocumentReference = mock(DocumentReference::class.java)
-        `when`(collection.document(testAisle.id)).thenReturn(mockDocumentReference)
-        `when`(mockDocumentReference.set(testAisle)).thenReturn(mock())
+
+        // Mock Firestore setup
+        `when`(mockFirestore.collection("aisles")).thenReturn(mockCollection)
+        `when`(mockCollection.orderBy("timestamp", Query.Direction.ASCENDING)).thenReturn(mockQuery)
+        `when`(mockQuery.addSnapshotListener(any<EventListener<QuerySnapshot>>())).thenReturn(mockListenerRegistration)
+        `when`(mockCollection.document(testAisle.id)).thenReturn(mockDocumentReference)
+        `when`(mockDocumentReference.set(testAisle)).thenReturn(mockTask)
+        `when`(mockTask.addOnSuccessListener(any())).thenReturn(mockTask) // Chainable Task
+        `when`(mockTask.addOnFailureListener(any())).thenReturn(mockTask) // Chainable Task
+
+        // Initialize repository
+        val repository = AisleRepository(mockFirestore)
 
         // Act
         repository.addAisle(testAisle)
 
         // Assert
-        Mockito.verify(collection).document(testAisle.id)
-        Mockito.verify(mockDocumentReference).set(testAisle)
+        verify(mockCollection).document(testAisle.id)
+        verify(mockDocumentReference).set(testAisle)
     }
 
     @Test
     fun `deleteAisle removes aisle from Firestore`() {
         // Arrange
-        val testAisle = com.openclassrooms.rebonnte.ui.aisle.Aisle(
+        val testAisle = Aisle(
             name = "Delete Aisle",
             id = "deleteId",
             timestamp = System.currentTimeMillis()

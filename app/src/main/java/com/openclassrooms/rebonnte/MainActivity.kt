@@ -161,7 +161,8 @@ fun MyApp(
                         currentRoute = currentRoute,
                         googleAuthUiClient = googleAuthUiClient,
                         emailAuthClient = emailAuthClient,
-                        onSignOut = { /* Optional: Add any additional cleanup here if needed */ }
+                        aisleViewModel = aisleViewModel,
+                        onSignOut = { /* ... */ }
                     )
                 }
             },
@@ -169,7 +170,7 @@ fun MyApp(
                 if (currentRoute in listOf("aisle", "medicine")) {
                     FloatingActionButton(onClick = {
                         if (currentRoute == "medicine") {
-                            navController.navigate("add_medicine") // Replaced Intent with navigation
+                            navController.navigate("add_medicine")
                         } else if (currentRoute == "aisle") {
                             aisleViewModel.addRandomAisle()
                         }
@@ -203,7 +204,7 @@ fun MyApp(
                         onBack = { navController.popBackStack() }
                     )
                 }
-                composable("add_medicine") { // Added new route
+                composable("add_medicine") {
                     AddMedicineScreen(
                         navController = navController,
                         medicineViewModel = medicineViewModel,

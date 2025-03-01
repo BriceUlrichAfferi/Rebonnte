@@ -1,5 +1,6 @@
 package com.openclassrooms.rebonnte.ui.medicine
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
@@ -22,15 +24,27 @@ import java.util.Date
 fun MedicineDetailScreen(
     name: String,
     viewModel: MedicineViewModel,
-    onBack: () -> Unit // For back navigation
+    onBack: () -> Unit
 ) {
     val medicines by viewModel.medicines.collectAsState(initial = emptyList())
     val medicine = medicines.find { it.name == name }
-    var stock by remember(medicine) { mutableStateOf(medicine?.stock ?: 0) }
-    val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email ?: "Unknown"
+    val context = LocalContext.current
+
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val currentUserEmail = currentUser?.email ?: "Unknown"
+    val currentUserId = currentUser?.uid ?: "Unknown"
+
+    LaunchedEffect(currentUser) {
+        println("MedicineDetailScreen - UID: $currentUserId, Email: $currentUserEmail")
+    }
+
+    LaunchedEffect(medicines) {
+        val updatedMedicine = medicines.find { it.name == name }
+        println("MedicineDetailScreen updated medicine: $updatedMedicine")
+    }
 
     if (name == "Unknown") {
-        LaunchedEffect(Unit) { onBack() } // Simply navigate back for "Unknown"
+        LaunchedEffect(Unit) { onBack() }
         return
     }
 
@@ -72,41 +86,46 @@ fun MedicineDetailScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    IconButton(
-                        onClick = {
-                            if (stock > 0) {
-                                stock--
-                                val updatedHistories = medicine.histories.toMutableList().apply {
-                                    add(History(medicine.name, medicine.addedByEmail, Date().toString(), "Decreased stock"))
-                                }
-                                viewModel.updateMedicine(medicine.copy(stock = stock, histories = updatedHistories))
+                    IconButton(onClick = {
+                        if (medicine.stock > 0) {
+                            val newStock = medicine.stock - 1
+                            val updatedHistories = medicine.histories.toMutableList().apply {
+                                add(History(medicine.name, currentUserEmail, Date().toString(), "Decreased stock"))
                             }
+                            viewModel.updateMedicine(medicine.copy(stock = newStock, histories = updatedHistories))
+                            Toast.makeText(context, "Stock decreased", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Stock cannot go below 0", Toast.LENGTH_SHORT).show()
                         }
-                    ) {
-                        Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "Decrease Stock")
+                    }) {
+                        Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "Minus One")
                     }
                     TextField(
-                        value = stock.toString(),
-                        onValueChange = { newValue -> stock = newValue.toIntOrNull() ?: stock },
+                        value = medicine.stock.toString(),
+                        onValueChange = { newValue ->
+                            val newStock = newValue.toIntOrNull() ?: medicine.stock
+                            viewModel.updateMedicine(medicine.copy(stock = newStock))
+                        },
                         label = { Text("Stock") },
                         modifier = Modifier.weight(1f)
                     )
-                    IconButton(
-                        onClick = {
-                            stock++
-                            val updatedHistories = medicine.histories.toMutableList().apply {
-                                add(History(medicine.name, medicine.addedByEmail, Date().toString(), "Increased stock"))
-                            }
-                            viewModel.updateMedicine(medicine.copy(stock = stock, histories = updatedHistories))
+                    IconButton(onClick = {
+                        val newStock = medicine.stock + 1
+                        val updatedHistories = medicine.histories.toMutableList().apply {
+                            add(History(medicine.name, currentUserEmail, Date().toString(), "Increased stock"))
                         }
-                    ) {
-                        Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = "Increase Stock")
+                        viewModel.updateMedicine(medicine.copy(stock = newStock, histories = updatedHistories))
+                        Toast.makeText(context, "Stock increased", Toast.LENGTH_SHORT).show()
+                    }) {
+                        Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = "Plus One")
                     }
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = "History", style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(8.dp))

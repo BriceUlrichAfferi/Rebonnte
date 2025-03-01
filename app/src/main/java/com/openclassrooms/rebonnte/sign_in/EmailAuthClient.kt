@@ -43,9 +43,9 @@ class EmailAuthClient {
                 data = result.user?.run {
                     Userdata(
                         userId = uid,
-                        userName = email, // Initially set username to email
+                        userName = email,
                         email = email,
-                        profilePictureUrl = null, // No profile picture at creation
+                        profilePictureUrl = null,
                         photoUrl = photoUrl?.toString()
                     )
                 },
@@ -64,7 +64,7 @@ class EmailAuthClient {
         }
     }
 
-    fun clearSession() { // Renamed from signOut() for consistency with previous suggestion
+    fun clearSession() {
         auth.signOut()
     }
 

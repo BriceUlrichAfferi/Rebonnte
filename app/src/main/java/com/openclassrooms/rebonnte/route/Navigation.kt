@@ -33,6 +33,7 @@ import com.openclassrooms.rebonnte.ui.medicine.MedicineScreen
 import com.openclassrooms.rebonnte.ui.medicine.MedicineViewModel
 
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.appNavigation(
     navController: NavController,
@@ -41,7 +42,7 @@ fun NavGraphBuilder.appNavigation(
     lifecycleScope: LifecycleCoroutineScope
 ) {
     composable("sign_in") {
-        val viewModel = viewModel<SignInViewModel>()
+        val viewModel: SignInViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
 
         SignInScreen(
@@ -52,7 +53,7 @@ fun NavGraphBuilder.appNavigation(
     }
 
     composable("google_sign_in") {
-        val viewModel = viewModel<SignInViewModel>()
+        val viewModel: SignInViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val googleSignInLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -63,7 +64,7 @@ fun NavGraphBuilder.appNavigation(
                         viewModel.onSignInResult(signInResult)
                         if (signInResult.data != null) {
                             navController.navigate("aisle") {
-                                popUpTo(navController.graph.startDestinationId)
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
                                 launchSingleTop = true
                             }
                         }
@@ -88,19 +89,18 @@ fun NavGraphBuilder.appNavigation(
     }
 
     composable("aisle") {
-        val aisleViewModel = viewModel<AisleViewModel>()
-        AisleScreen(navController, aisleViewModel)
+        val aisleViewModel: AisleViewModel = koinViewModel()
     }
 
     composable("medicine") {
-        val medicineViewModel = viewModel<MedicineViewModel>()
-        MedicineScreen(navController, medicineViewModel) // Pass navController
+        val medicineViewModel: MedicineViewModel = koinViewModel()
+        MedicineScreen(navController, medicineViewModel)
     }
 
     composable("sign_up") {
         SignUpScreen(
             onLoginSuccess = {
-                navController.navigate("aisle") { // Fixed from "aisle, medicine" to "aisle"
+                navController.navigate("aisle") {
                     popUpTo("sign_up") { inclusive = true }
                 }
             },
@@ -117,15 +117,15 @@ fun NavGraphBuilder.appNavigation(
     }
 
     composable(
-        "medicine_detail/{medicineName}", // Consistent route name
+        "medicine_detail/{medicineName}",
         arguments = listOf(navArgument("medicineName") { type = NavType.StringType })
     ) { backStackEntry ->
         val medicineName = backStackEntry.arguments?.getString("medicineName") ?: "Unknown"
+        val medicineViewModel: MedicineViewModel = koinViewModel()
         MedicineDetailScreen(
             name = medicineName,
-            viewModel = viewModel<MedicineViewModel>(),
-            onBack = { navController.popBackStack() },
-
+            viewModel = medicineViewModel,
+            onBack = { navController.popBackStack() }
         )
     }
 }

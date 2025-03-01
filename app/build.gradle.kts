@@ -84,6 +84,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
 
+    implementation("androidx.compose.material:material:1.6.0")
+
+
     // Espresso
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")

@@ -1,45 +1,66 @@
 package com.openclassrooms.rebonnte.ui.medicine
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+
+
 class MedicineRepository(private val firestore: FirebaseFirestore) {
     private val _medicines = MutableStateFlow<List<Medicine>>(emptyList())
     val medicines: StateFlow<List<Medicine>> = _medicines.asStateFlow()
     private val MEDICINES_COLLECTION = "medicines"
+    private var listenerRegistration: ListenerRegistration? = null
 
     init {
-        loadMedicines() // Default load (unsorted)
+        loadMedicines()
     }
 
-    private fun loadMedicines() {
-        firestore.collection(MEDICINES_COLLECTION)
+    fun loadMedicines() {
+        listenerRegistration?.remove()
+        println("Attaching new medicine snapshot listener")
+        listenerRegistration = firestore.collection(MEDICINES_COLLECTION)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    println("Firestore error: ${e.message}")
+                    println("Medicine snapshot listener error: ${e.message}")
                     return@addSnapshotListener
                 }
-                val medList = snapshot?.documents?.mapNotNull { it.toObject(Medicine::class.java) } ?: emptyList()
+                if (snapshot == null) {
+                    println("Medicine snapshot is null")
+                    return@addSnapshotListener
+                }
+                val medList = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Medicine::class.java)?.copy(id = doc.id)
+                }
+                println("Medicines updated: $medList")
                 _medicines.value = medList
             }
     }
 
     fun addMedicine(medicine: Medicine) {
-        firestore.collection(MEDICINES_COLLECTION)
-            .document(medicine.id)
-            .set(medicine)
-            .addOnSuccessListener { println("Medicine added: ${medicine.name}") }
+        val newDocRef = firestore.collection(MEDICINES_COLLECTION).document()
+        val medicineWithId = medicine.copy(id = newDocRef.id)
+        newDocRef
+            .set(medicineWithId)
+            .addOnSuccessListener { println("Medicine added: ${medicineWithId.name}, ID: ${medicineWithId.id}") }
             .addOnFailureListener { e -> println("Failed to add medicine: ${e.message}") }
     }
 
     fun updateMedicine(medicine: Medicine) {
+        if (medicine.id.isEmpty()) {
+            println("Error: Cannot update medicine with empty ID")
+            return
+        }
+        println("Updating Medicine: ${medicine.name}, Stock: ${medicine.stock}, Histories: ${medicine.histories}")
         firestore.collection(MEDICINES_COLLECTION)
             .document(medicine.id)
             .set(medicine)
-            .addOnSuccessListener { println("Medicine updated: ${medicine.name}") }
+            .addOnSuccessListener {
+                loadMedicines()
+            }
             .addOnFailureListener { e -> println("Failed to update medicine: ${e.message}") }
     }
 
@@ -51,40 +72,27 @@ class MedicineRepository(private val firestore: FirebaseFirestore) {
             .addOnFailureListener { e -> println("Failed to delete medicine: ${e.message}") }
     }
 
-    // Filter by name using Firestore query
     fun filterByName(name: String) {
         if (name.isEmpty()) {
-            loadMedicines() // Reset to all medicines
+            loadMedicines()
         } else {
-            firestore.collection(MEDICINES_COLLECTION)
+            listenerRegistration?.remove()
+            listenerRegistration = firestore.collection(MEDICINES_COLLECTION)
                 .whereGreaterThanOrEqualTo("name", name)
                 .whereLessThanOrEqualTo("name", name + "\uf8ff")
                 .addSnapshotListener { snapshot, e ->
                     if (e != null) {
-                        println("Firestore filter error: ${e.message}")
                         return@addSnapshotListener
                     }
-
-                    if (snapshot == null || snapshot.isEmpty) {
-                        println("FirestoreDebug: No matching medicines found for query: $name")
-                    } else {
-                        println("FirestoreDebug: Query returned ${snapshot.documents.size} documents")
-                        for (document in snapshot.documents) {
-                            println("FirestoreDebug: Document Data: ${document.data}")
-                        }
-                    }
-
                     val medList = snapshot?.documents?.mapNotNull { it.toObject(Medicine::class.java) } ?: emptyList()
-                    println("Filtered medicines: ${medList.size}")
                     _medicines.value = medList
                 }
         }
     }
 
-
-    // Sort by name using Firestore query
     fun sortByName() {
-        firestore.collection(MEDICINES_COLLECTION)
+        listenerRegistration?.remove()
+        listenerRegistration = firestore.collection(MEDICINES_COLLECTION)
             .orderBy("name", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -96,13 +104,12 @@ class MedicineRepository(private val firestore: FirebaseFirestore) {
             }
     }
 
-    // Sort by stock using Firestore query
     fun sortByStock() {
-        firestore.collection(MEDICINES_COLLECTION)
+        listenerRegistration?.remove()
+        listenerRegistration = firestore.collection(MEDICINES_COLLECTION)
             .orderBy("stock", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    println("Firestore sort error: ${e.message}")
                     return@addSnapshotListener
                 }
                 val medList = snapshot?.documents?.mapNotNull { it.toObject(Medicine::class.java) } ?: emptyList()
@@ -110,7 +117,6 @@ class MedicineRepository(private val firestore: FirebaseFirestore) {
             }
     }
 
-    // Reset to unsorted (default)
     fun sortByNone() {
         loadMedicines()
     }

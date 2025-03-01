@@ -19,7 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.openclassrooms.rebonnte.sign_in.GoogleAuthUiClient
 import com.openclassrooms.rebonnte.sign_in.EmailAuthClient
+import com.openclassrooms.rebonnte.sign_in.SignInViewModel
+import com.openclassrooms.rebonnte.ui.aisle.AisleViewModel
+import com.openclassrooms.rebonnte.ui.medicine.MedicineViewModel
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BottomNavBar(
@@ -27,11 +31,15 @@ fun BottomNavBar(
     currentRoute: String?,
     googleAuthUiClient: GoogleAuthUiClient,
     emailAuthClient: EmailAuthClient,
+    aisleViewModel: AisleViewModel,
+    medicineViewModel: MedicineViewModel = koinViewModel(),
     onSignOut: () -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
     var showSignOutDialog by remember { mutableStateOf(false) }
-
+    val signInViewModel: SignInViewModel = koinViewModel()
+    val aisleViewModel: AisleViewModel = koinViewModel()
+    val medicineViewModel: MedicineViewModel = koinViewModel()
     NavigationBar {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Aisle") },
@@ -59,13 +67,10 @@ fun BottomNavBar(
             icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Sign Out") },
             label = { Text("Sign Out") },
             selected = false,
-            onClick = {
-                showSignOutDialog = true // Show dialog instead of signing out directly
-            }
+            onClick = { showSignOutDialog = true }
         )
     }
 
-    // Sign-out confirmation dialog
     if (showSignOutDialog) {
         AlertDialog(
             onDismissRequest = { showSignOutDialog = false },
@@ -74,24 +79,19 @@ fun BottomNavBar(
             confirmButton = {
                 TextButton(onClick = {
                     coroutineScope.launch {
-                        // Sign out from Google (includes Firebase sign-out)
                         googleAuthUiClient.signOut()
-
-                        // Clear email auth session (includes Firebase sign-out)
                         emailAuthClient.clearSession()
-
-                        // Navigate to sign-in screen and clear back stack
+                        signInViewModel.resetState()
+                        //aisleViewModel.repository.loadAisles()
+                        aisleViewModel.refreshAisles()
+                        medicineViewModel.refreshMedicines()
                         navController.navigate("sign_in") {
-                            popUpTo(navController.graph.startDestinationId) {
-                                inclusive = true
-                            }
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
                             launchSingleTop = true
                         }
-
-                        // Call additional sign-out callback
                         onSignOut()
                     }
-                    showSignOutDialog = false // Close dialog after confirming
+                    showSignOutDialog = false
                 }) {
                     Text("Yes")
                 }
