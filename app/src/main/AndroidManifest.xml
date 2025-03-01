@@ -20,18 +20,6 @@
         android:theme="@style/Theme.Rebonnte"
         tools:targetApi="31">
         <activity
-            android:name=".ui.medicine.MedicineDetailActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.aisle.AisleDetailActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.medicine.AddMedicineActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name">
