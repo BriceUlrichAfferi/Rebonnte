@@ -63,24 +63,23 @@ fun NameSurnameInputScreen(
             onValueChange = onNameChange,
             label = { Text(
                 text = stringResource(id = R.string.name),
-                color = Color.Black
             ) },
             isError = nameError != null,
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Gray,
                 disabledTextColor = Color.Gray,
                 errorTextColor = Color.Red,
                 focusedIndicatorColor = Color.Black,
-                unfocusedIndicatorColor = Color.Black,
-                errorIndicatorColor = Color.Black,
+                unfocusedIndicatorColor = Color.Gray,
+                errorIndicatorColor = Color.Red,
                 focusedLabelColor = Color.Black,
-                unfocusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Gray,
                 focusedContainerColor = colorResource(id = R.color.teal_700),
                 unfocusedContainerColor = colorResource(id = R.color.teal_700),
                 disabledContainerColor = Color.LightGray,
-                errorContainerColor = Color.Red
+                errorContainerColor = Color.White
             )
         )
         nameError?.let {

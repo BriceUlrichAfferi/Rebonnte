@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
-    id("org.sonarqube") version "6.0.0.5145"
 }
 
 android {
@@ -59,15 +58,6 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-    }
-}
-
-sonarqube {
-    properties {
-        property("sonar.projectKey", "BriceUlrichAfferi_Rebonnte")
-        property("sonar.organization", "briceulrichafferi")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.gradle.skipCompile", "true") // Add this line
     }
 }
 

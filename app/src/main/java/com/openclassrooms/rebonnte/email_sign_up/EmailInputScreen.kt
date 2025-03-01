@@ -44,7 +44,6 @@ fun EmailInputScreen(
             text = stringResource(id = R.string.enter_email),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
@@ -55,14 +54,14 @@ fun EmailInputScreen(
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Gray,
                 disabledTextColor = Color.Gray,
                 errorTextColor = Color.Red,
                 focusedIndicatorColor = Color.Black,
-                unfocusedIndicatorColor = Color.Black,
-                errorIndicatorColor = Color.Black,
+                unfocusedIndicatorColor = Color.Gray,
+                errorIndicatorColor = Color.Red,
                 focusedLabelColor = Color.Black,
-                unfocusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Gray,
                 focusedContainerColor = colorResource(id = R.color.teal_700),
                 unfocusedContainerColor = colorResource(id = R.color.teal_700),
                 disabledContainerColor = Color.LightGray,
