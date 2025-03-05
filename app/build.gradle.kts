@@ -13,9 +13,6 @@ val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties().apply {
     if (keystorePropertiesFile.exists()) {
         load(FileInputStream(keystorePropertiesFile))
-    } else {
-        // Warn if the file is missing (useful for debugging)
-        println("Warning: keystore.properties not found at ${keystorePropertiesFile.absolutePath}")
     }
 }
 
@@ -37,26 +34,12 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            val storeFileValue = keystoreProperties["storeFile"]?.let { file(it) }
-            storeFile = storeFileValue
+        // New signing config for the new keystore
+        create("release")  {
+            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
             storePassword = keystoreProperties["storePassword"] as? String
             keyAlias = keystoreProperties["keyAlias"] as? String
             keyPassword = keystoreProperties["keyPassword"] as? String
-
-            // Validate required properties
-            if (storeFileValue == null || !storeFileValue.exists()) {
-                throw GradleException("Missing or invalid 'storeFile' in keystore.properties. Expected a valid keystore file path.")
-            }
-            if (storePassword == null) {
-                throw GradleException("Missing 'storePassword' in keystore.properties.")
-            }
-            if (keyAlias == null) {
-                throw GradleException("Missing 'keyAlias' in keystore.properties.")
-            }
-            if (keyPassword == null) {
-                throw GradleException("Missing 'keyPassword' in keystore.properties.")
-            }
         }
     }
     buildTypes {
