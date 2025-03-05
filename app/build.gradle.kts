@@ -1,19 +1,7 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
-}
-
-
-// Load keystore.properties from the root directory
-val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties().apply {
-    if (keystorePropertiesFile.exists()) {
-        load(FileInputStream(keystorePropertiesFile))
-    }
 }
 
 android {
@@ -35,11 +23,11 @@ android {
 
     signingConfigs {
         // New signing config for the new keystore
-        create("release")  {
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as? String
-            keyAlias = keystoreProperties["keyAlias"] as? String
-            keyPassword = keystoreProperties["keyPassword"] as? String
+        create("release") {
+            storeFile = file("new_keystore.jks")
+            storePassword = "jesusmarie1"
+            keyAlias = "new_key"
+            keyPassword = "jesusmarie1"
         }
     }
     buildTypes {
@@ -87,7 +75,6 @@ dependencies {
 
 
     implementation("androidx.compose.material:material:1.6.0")
-    implementation(libs.core.ktx)
 
 
     // Espresso
@@ -106,7 +93,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha05")
 
     implementation(libs.coil.compose)
-    implementation ("androidx.work:work-runtime-ktx:2.10.0")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
@@ -140,9 +126,7 @@ dependencies {
     testImplementation("io.insert-koin:koin-test:3.2.0")
     testImplementation("com.google.firebase:firebase-auth:21.0.7")
     testImplementation("io.mockk:mockk:1.12.0")
-
-
-       testImplementation(libs.junit)
+    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
