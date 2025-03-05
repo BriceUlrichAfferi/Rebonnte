@@ -13,6 +13,9 @@ val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties().apply {
     if (keystorePropertiesFile.exists()) {
         load(FileInputStream(keystorePropertiesFile))
+    } else {
+        // Warn if the file is missing (useful for debugging)
+        println("Warning: keystore.properties not found at ${keystorePropertiesFile.absolutePath}")
     }
 }
 
@@ -34,12 +37,26 @@ android {
     }
 
     signingConfigs {
-        // New signing config for the new keystore
-        create("release")  {
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+        create("release") {
+            val storeFileValue = keystoreProperties["storeFile"]?.let { file(it) }
+            storeFile = storeFileValue
             storePassword = keystoreProperties["storePassword"] as? String
             keyAlias = keystoreProperties["keyAlias"] as? String
             keyPassword = keystoreProperties["keyPassword"] as? String
+
+            // Validate required properties
+            if (storeFileValue == null || !storeFileValue.exists()) {
+                throw GradleException("Missing or invalid 'storeFile' in keystore.properties. Expected a valid keystore file path.")
+            }
+            if (storePassword == null) {
+                throw GradleException("Missing 'storePassword' in keystore.properties.")
+            }
+            if (keyAlias == null) {
+                throw GradleException("Missing 'keyAlias' in keystore.properties.")
+            }
+            if (keyPassword == null) {
+                throw GradleException("Missing 'keyPassword' in keystore.properties.")
+            }
         }
     }
     buildTypes {
@@ -140,10 +157,9 @@ dependencies {
     testImplementation("io.insert-koin:koin-test:3.2.0")
     testImplementation("com.google.firebase:firebase-auth:21.0.7")
     testImplementation("io.mockk:mockk:1.12.0")
-    testImplementation ("org.robolectric:robolectric:4.10")
 
 
-    testImplementation(libs.junit)
+       testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

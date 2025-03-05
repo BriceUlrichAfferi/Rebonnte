@@ -37,8 +37,10 @@ jobs:
 
       - name: Write keystore file
         run: |
-          # No need for mkdir since app/ already exists in the repo
-          [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("${{ secrets.KEYSTORE_FILE }}")) | Set-Content -Path "app/new_keystore.jks" -Encoding Byte
+          # Decode the base64 encoded keystore string and write it as a binary file
+          [System.IO.File]::WriteAllBytes("app/new_keystore.jks", [System.Convert]::FromBase64String("${{ secrets.KEYSTORE_FILE }}"))
+      
+      
 
       - name: Verify keystore files (debug)
         run: |
