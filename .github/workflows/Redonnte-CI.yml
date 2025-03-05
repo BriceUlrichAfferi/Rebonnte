@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test-on-real-device:
+  test-and-build:
     runs-on: self-hosted
 
     env:
@@ -28,8 +28,20 @@ jobs:
           $env:Path += ";C:\Users\commu\AppData\Local\Android\Sdk\platform-tools"
           adb devices
 
-      - name: Build with Gradle
-        run: .\gradlew.bat build
+      - name: Write keystore.properties
+        run: |
+          echo "storeFile=app/new_keystore.jks" > keystore.properties
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> keystore.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+
+      - name: Write keystore file
+        run: |
+          mkdir app 2>$null # Create app directory if it doesn't exist
+          echo "${{ secrets.KEYSTORE_FILE }}" > app/new_keystore.jks
+
+      - name: Build with Gradle (Debug and Release)
+        run: .\gradlew.bat build -x lint --stacktrace
 
       - name: Run Unit Tests
         run: |
@@ -40,10 +52,17 @@ jobs:
           adb devices
           # Optional: Disconnect emulator to ensure only real device is used
           adb -s emulator-5554 emu kill
-          if ($?) { Write-Host "Emulator killed successfully" } else { Write-Host "Failed to kill emulator" }
+          if ($?) { Write-Host "Emulator killed successfully" } else { Write-Host "Failed to kill emulator or no emulator found" }
           # Verify real device is active
           adb -s 1cc072ab2f090dre shell pm list packages
           .\gradlew.bat connectedAndroidTest --stacktrace
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: app/build/test-results/**/*.html
 
       - name: Upload Test Results
         if: always()
