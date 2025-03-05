@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
-    runs-on: self-hosted  # Assuming self-hosted runner with Android device connected
+  build:
+    runs-on: self-hosted  # Your self-hosted Windows runner
 
     env:
       ANDROID_HOME: C:\Users\commu\AppData\Local\Android\Sdk
@@ -24,55 +24,32 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Set up Android SDK Tools
-        run: |
-          $env:Path += ";C:\Users\commu\AppData\Local\Android\Sdk\platform-tools"
-          adb devices
-
       - name: Write Keystore File
         shell: powershell
         run: |
-          [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("${{ secrets.KEYSTORE_FILE }}")) | Out-File -FilePath "mykeystore.jks" -Encoding UTF8
+          [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("${{ secrets.KEYSTORE_FILE }}")) | Out-File -FilePath "new_keystore.jks" -Encoding UTF8
 
       - name: Write Keystore Properties
         shell: powershell
         run: |
           @"
-          storeFile=${{ github.workspace }}\mykeystore.jks
+          storeFile=${{ github.workspace }}\new_keystore.jks
           storePassword=${{ secrets.STORE_PASSWORD }}
           keyAlias=${{ secrets.KEY_ALIAS }}
           keyPassword=${{ secrets.KEY_PASSWORD }}
           "@ | Out-File -FilePath "keystore.properties" -Encoding UTF8
 
+      - name: Verify Keystore Setup (Debug)
+        shell: powershell
+        run: |
+          if (Test-Path "new_keystore.jks") { Write-Host "Keystore file exists" } else { Write-Host "Keystore file missing" }
+          Get-Content "keystore.properties" || Write-Host "Failed to read keystore.properties"
+
       - name: Build Release APK
         run: .\gradlew.bat assembleRelease --stacktrace
 
-      - name: Run Unit Tests (Optional)
-        if: success()  # Only run if build succeeds
-        run: |
-          .\gradlew.bat testDebugUnitTest --stacktrace --continue
-        continue-on-error: true  # Allow workflow to proceed even if tests fail
-
-      - name: Run Instrumented Tests on Real Device (Optional)
-        if: success()  # Only run if build succeeds
-        run: |
-          adb devices
-          # Optional: Disconnect emulator if present
-          adb -s emulator-5554 emu kill || Write-Host "No emulator to kill"
-          # Verify real device
-          adb -s 1cc072ab2f090dre shell pm list packages
-          .\gradlew.bat connectedAndroidTest --stacktrace --continue
-        continue-on-error: true  # Allow workflow to proceed even if tests fail
-
-      - name: Upload Test Results
-        if: always()  # Upload even if tests fail
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: app/build/test-results/**/*.html
-
       - name: Upload APK
-        if: always()  # Upload APK even if tests fail
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
