@@ -37,8 +37,13 @@ jobs:
 
       - name: Write keystore file
         run: |
-          mkdir app 2>$null # Create app directory if it doesn't exist
-          echo "${{ secrets.KEYSTORE_FILE }}" > app/new_keystore.jks
+          # No need for mkdir since app/ already exists in the repo
+          [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("${{ secrets.KEYSTORE_FILE }}")) | Set-Content -Path "app/new_keystore.jks" -Encoding Byte
+
+      - name: Verify keystore files (debug)
+        run: |
+          dir keystore.properties
+          dir app\new_keystore.jks
 
       - name: Build with Gradle (Debug and Release)
         run: .\gradlew.bat build -x lint --stacktrace
@@ -64,9 +69,9 @@ jobs:
           name: test-results
           path: app/build/test-results/**/*.html
 
-      - name: Upload Test Results
+      - name: Upload Release APK
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: app/build/test-results/**/*.html
+          name: release-apk
+          path: app/build/outputs/apk/release/app-release.apk
