@@ -28,6 +28,6 @@ https://github.com/user-attachments/assets/2738be15-3a0b-467b-88bb-7c7d9702062d
 [kotlin]: https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=white
 [androidstudio]: https://img.shields.io/badge/Android%20Studio-3DDC84?style=for-the-badge&logo=androidstudio&logoColor=white
 [gradle]: https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white
-[Firebase]: [Primary_Vertical_Lockup_Full_Color_Inverted](https://github.com/user-attachments/assets/327426ff-62c6-43d3-af8c-6657db225030)
-[WorkManager]: (https://github.com/user-attachments/assets/7c359eb3-8927-41a8-8b9a-b8829270e32f)
+[Primary_Vertical_Lockup_Full_Color_Inverted](https://github.com/user-attachments/assets/327426ff-62c6-43d3-af8c-6657db225030)
+(https://github.com/user-attachments/assets/7c359eb3-8927-41a8-8b9a-b8829270e32f)
 
